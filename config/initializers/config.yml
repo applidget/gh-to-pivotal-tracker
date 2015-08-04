@@ -1,0 +1,8 @@
+development:
+  base_url: http://localhost:9292
+
+test:
+  base_url: FAKE_BASE_URL
+
+production:
+  base_url: <%= ENV['BASE_URL'] || "https://todo-url.com" %>
