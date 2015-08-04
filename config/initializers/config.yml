@@ -1,11 +1,8 @@
 development:
   base_url: http://localhost:9292
-  mobicheckin_api_base_uri: http://localhost:5000/api/v1
 
 test:
   base_url: FAKE_BASE_URL
-  mobicheckin_api_base_uri: http://localhost:5000/api/v1
 
 production:
-  base_url: <%= ENV['BASE_URL'] || "https://amiando-bridge.apxpo.com" %>
-  mobicheckin_api_base_uri: https://app.mobicheckin.com/api/v1
+  base_url: <%= ENV['BASE_URL'] || "https://todo-url.com" %>
