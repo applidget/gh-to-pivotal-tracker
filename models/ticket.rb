@@ -19,6 +19,7 @@ class Ticket
   field :pt_id
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
+  validates_uniqueness_of :gh_id, :gh_number, :pt_id
   
   def should_create_story?
     pt_id.blank? && gh_labels.include?(TRIGGERING_LABEL)
