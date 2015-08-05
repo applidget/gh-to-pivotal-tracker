@@ -6,7 +6,7 @@ require "multi_json"
 class GithubToPivotalTracker < Sinatra::Base
   register Sinatra::ConfigFile
 
-  config_file '#{settings.root}/config/initializers/config.yml'
+  config_file '#{settings.root}/config/config.yml'
 
   set :logging, true
   set :dump_errors, true
@@ -22,6 +22,7 @@ class GithubToPivotalTracker < Sinatra::Base
 end
 
   post '/hook' do
+    WebHook.new
     puts parsed_body
   end
 end
