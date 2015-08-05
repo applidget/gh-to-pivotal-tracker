@@ -22,7 +22,7 @@ class GithubToPivotalTracker < Sinatra::Base
 end
 
   post '/hook' do
-    WebHook.new
-    puts parsed_body
+    debugger
+    WebHook.create action: params[:action], issue: params[:issue], sender: params[:sender]
   end
 end
