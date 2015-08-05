@@ -1,6 +1,6 @@
 #As specified here https://github.com/applidget/products/blob/master/docs/drafts/gh-to-pivotal-sync.md#données-sauvegardées
 
-TRIGGERING_LABEL = "PT"
+TRIGGERING_LABEL = "synced"
 
 class Ticket
   include Mongoid::Document
