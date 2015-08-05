@@ -1,6 +1,6 @@
 common: &common
-  pivotal_tracker_auto_token: <% ENV['PIVOTAL_TRACKER_AUTH_TOKEN'] %>
-  pivotal_tracker_project_id: <% ENV['PIVOTAL_TRACKER_PROJECT_ID'] %>
+  pivotal_tracker_auto_token: <%= ENV['PIVOTAL_TRACKER_AUTH_TOKEN'] || "123" %>
+  pivotal_tracker_project_id: <%= ENV['PIVOTAL_TRACKER_PROJECT_ID'] || "123" %>
   
 development:
   <<: *common
