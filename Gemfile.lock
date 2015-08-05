@@ -13,6 +13,9 @@ GEM
     backports (3.6.6)
     bson (3.2.1)
     builder (3.2.2)
+    byebug (5.0.0)
+      columnize (= 0.9.0)
+    columnize (0.9.0)
     i18n (0.7.0)
     json (1.8.3)
     minitest (5.7.0)
@@ -52,6 +55,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
   mongoid (= 5.0.0.beta)
   multi_json
   rack-contrib (~> 1.1.0)
