@@ -14,8 +14,16 @@ GEM
     bond (0.5.1)
     bson (3.2.1)
     builder (3.2.2)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
+    domain_name (0.5.24)
+      unf (>= 0.0.5, < 1.0.0)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
     i18n (0.7.0)
     json (1.8.3)
+    mime-types (2.6.1)
+    mini_portile (0.6.2)
     minitest (5.7.0)
     mongo (2.1.0.beta)
       bson (~> 3.0)
@@ -25,7 +33,18 @@ GEM
       origin (~> 2.1)
       tzinfo (>= 0.3.37)
     multi_json (1.11.1)
+    netrc (0.10.3)
+    nokogiri (1.6.6.2)
+      mini_portile (~> 0.6.0)
+    nokogiri-happymapper (0.5.9)
+      nokogiri (~> 1.5)
     origin (2.1.1)
+    pivotal-tracker (0.5.13)
+      builder
+      crack
+      nokogiri (>= 1.5.5)
+      nokogiri-happymapper (>= 0.5.4)
+      rest-client (>= 1.8.0)
     rack (1.6.4)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
@@ -33,6 +52,10 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
+    rest-client (1.8.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
     ripl (0.7.1)
       bond (~> 0.5.1)
     ripl-multi_line (0.3.1)
@@ -41,6 +64,7 @@ GEM
       rack (>= 1.0)
       rack-test (~> 0.6.2)
       ripl (>= 0.7.0)
+    safe_yaml (1.0.4)
     sinatra (1.4.6)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -61,6 +85,9 @@ GEM
       sinatra (>= 1.2.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.1)
 
 PLATFORMS
   ruby
@@ -68,6 +95,7 @@ PLATFORMS
 DEPENDENCIES
   mongoid (= 5.0.0.beta)
   multi_json
+  pivotal-tracker
   rack-contrib (~> 1.1.0)
   sinatra
   sinatra-contrib

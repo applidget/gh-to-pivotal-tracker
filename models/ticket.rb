@@ -15,4 +15,15 @@ class Ticket
   
   #Pivotal Tracker parmas
   field :pt_id
+  
+  def create_pt_story
+    
+  end
+  
+  def self.list_stories
+    PivotalTracker::Client.token = APP_CONFIG["pivotal_tracker_auth_token"].to_s
+    PivotalTracker::Project.all
+    project = PivotalTracker::Project.find(APP_CONFIG["pivotal_tracker_project_id"])
+    project.stories.all
+  end
 end
