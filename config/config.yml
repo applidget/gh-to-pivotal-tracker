@@ -1,8 +1,15 @@
+common: &common
+  pivotal_tracker_auto_token: <% ENV['PIVOTAL_TRACKER_AUTH_TOKEN'] %>
+  pivotal_tracker_project_id: <% ENV['PIVOTAL_TRACKER_PROJECT_ID'] %>
+  
 development:
+  <<: *common
   base_url: http://localhost:9292
 
 test:
+  <<: *common
   base_url: FAKE_BASE_URL
 
 production:
+  <<: *common
   base_url: <%= ENV['BASE_URL'] || "https://todo-url.com" %>
