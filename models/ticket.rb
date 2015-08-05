@@ -30,6 +30,7 @@ class Ticket
     if @pivotal_story.id
       self.pt_id = @pivotal_story.id
       self.save
+      sync_labels
     end
   end
   
@@ -49,8 +50,9 @@ class Ticket
   
   def sync_labels
     return nil if should_create_story?
-    pivotal_story.labels << self.gh_labels.map{ |label| TrackerApi::Resources::Label.new(name: label)  }
-    pivotal_story.save
+    story = pivotal_story
+    story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
+    story.save
   end
   
   def self.pivotal_project
