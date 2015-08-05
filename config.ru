@@ -1,3 +1,5 @@
+require "./environment"
+
 # Load app
 require './gh-to-pivotal-tracker'
 
