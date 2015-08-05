@@ -16,12 +16,13 @@ class GithubToPivotalTracker < Sinatra::Base
   end
 
   helpers do
-  def parsed_body
-    ::MultiJson.decode(request.body)
+    def parsed_body
+      ::MultiJson.decode(request.body)
+    end
   end
-end
-
+  
   post '/hook' do
+    
     WebHook.new
     puts parsed_body
   end
