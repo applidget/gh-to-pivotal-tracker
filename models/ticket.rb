@@ -50,9 +50,6 @@ class Ticket
     status != "unscheduled"
   end
   
-  STATE_MAPPING = {
-    "closed" =>
-  }
   
   def sync
     return nil if should_create_story?
