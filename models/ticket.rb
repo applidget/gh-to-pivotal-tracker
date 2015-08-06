@@ -6,6 +6,13 @@ class Ticket
   include Mongoid::Document
   include Mongoid::Timestamps
   
+  STATE_MAPPING = {
+    "accepted" => "closed",
+    "unstarted" => "open",
+    "unscheduled" => "open",
+    "started" => "open"
+  }
+  
   #Github issue params
   field :gh_id
   field :gh_number
@@ -19,7 +26,8 @@ class Ticket
   field :pt_id
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
-  validates_uniqueness_of :gh_id, :gh_number, :pt_id
+  validates_uniqueness_of :gh_id, :gh_number
+  validates_uniqueness_of :pt_id, allow_nil: true
   
   def should_create_story?
     pt_id.blank? && gh_labels.include?(TRIGGERING_LABEL)
@@ -37,7 +45,7 @@ class Ticket
   
   def pivotal_story
     return nil if should_create_story?
-    @pivotal_story ||= Tiket.story_from_id(self.pt_id)
+    @pivotal_story ||= Ticket.story_from_id(self.pt_id)
   end
 
   def status
@@ -49,28 +57,33 @@ class Ticket
     status != "unscheduled"
   end
   
-  STATE_MAPPING = {
-    "closed" =>
-  }
-  
   def sync
-    return nil if should_create_story?
     sync_labels
     sync_state
-    
-  end
-  
-  def sync_state
-    return if should_create_story?
-    story = pivotal_story
-    story.state = self.gh_state
+    pivotal_story.save
   end
   
   def sync_labels
-    return if should_create_story?
+    return if pt_id == nil
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
   end
+  
+  def sync_state
+    return if pt_id == nil
+    current_state = pivotal_story["current_state"]
+    if STATE_MAPPING[current_state] != gh_state
+      if gh_state == "open" #Reopen
+        #FIXME: side effect, because if closed from PT, the next hook from GH will mark it as unstarted
+        pivotal_story.current_state = "unstarted"
+        pivotal_story.accepted_at = nil
+      else
+        #Issue has been closed
+        pivotal_story.current_state = "accepted"
+      end
+    end
+  end
+  
   
   def self.pivotal_project
     @@client ||= TrackerApi::Client.new(token: APP_CONFIG["pivotal_tracker_auth_token"].to_s)
@@ -83,5 +96,23 @@ class Ticket
   
   def self.story_from_id(story_id)
     pivotal_project.story(story_id)
+  end
+
+  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state)
+    ticket = Ticket.where(gh_id: gh_id).first
+    params = {
+        gh_number: number,
+        gh_title: title,
+        gh_html_url: html_url,
+        gh_labels: labels,
+        gh_author: author,
+        gh_state: state
+      }
+    if ticket.nil?
+      ticket = Ticket.create({gh_id: gh_id}.merge!(params))
+    else
+      ticket.update_attributes(params)
+    end
+    ticket
   end
 end

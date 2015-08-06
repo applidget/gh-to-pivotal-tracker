@@ -1,6 +1,7 @@
 require "./environment"
 require './gh-to-pivotal-tracker'
 
+use Rack::PostBodyContentTypeParser
 require 'resque/server'
 
 # Protect Resque behind basic auth

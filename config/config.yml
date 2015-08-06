@@ -3,7 +3,7 @@ common: &common
   pivotal_tracker_project_id: <%= ENV['PIVOTAL_TRACKER_PROJECT_ID'] || "123" %>
   github_access_token: <%= ENV['GITHUB_ACCESS_TOKEN'] || "123" %>
   github_repo_name: <%= ENV['GITHUB_REPO_NAME'] || "123" %>
-  
+
 development:
   <<: *common
   base_url: http://localhost:9292
