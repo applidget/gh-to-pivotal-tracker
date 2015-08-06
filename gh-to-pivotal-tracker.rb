@@ -22,6 +22,6 @@ class GithubToPivotalTracker < Sinatra::Base
   end
   
   post '/hook' do
-    WebHook.create action: params[:action], issue: params[:issue], sender: params[:sender]
+    WebHook.create! action: params[:action], issue: params[:issue], sender: params[:sender]
   end
 end
