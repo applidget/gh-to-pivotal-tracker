@@ -32,13 +32,13 @@ class Ticket
     if @pivotal_story.id
       self.pt_id = @pivotal_story.id
       self.save
-      sync_labels
+      sync
     end
   end
   
   def pivotal_story
     return nil if should_create_story?
-    @pivotal_story ||= Tiket.story_from_id(self.pt_id)
+    @pivotal_story ||= Ticket.story_from_id(self.pt_id)
   end
 
   def status
@@ -50,8 +50,12 @@ class Ticket
     status != "unscheduled"
   end
   
+  def sync
+    sync_labels
+  end
+  
   def sync_labels
-    return nil if should_create_story?
+    return if pt_id == nil
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
     story.save
@@ -81,9 +85,10 @@ class Ticket
         gh_state: state
       }
     if ticket.nil?
-      Ticket.create({gh_id: gh_id}.merge!(params))
+      ticket = Ticket.create({gh_id: gh_id}.merge!(params))
     else
       ticket.update_attributes(params)
     end
+    ticket
   end
 end

@@ -1,5 +1,5 @@
 sync_latest_webhooks:
-  every: 20s
+  every: 3s
   class: ConsumeWebHooksJob
   queue: syncer
   description: "This will take all recently added webhooks and sync them"
