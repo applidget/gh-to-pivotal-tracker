@@ -81,7 +81,7 @@ class Ticket
         gh_state: state
       }
     if ticket.nil?
-      Ticket.create({gh_id: gh_id}.merge!(params))
+      ticket = Ticket.create({gh_id: gh_id}.merge!(params))
     else
       ticket.update_attributes(params)
     end
