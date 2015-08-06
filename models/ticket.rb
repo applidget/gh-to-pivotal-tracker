@@ -19,7 +19,8 @@ class Ticket
   field :pt_id
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
-  validates_uniqueness_of :gh_id, :gh_number, :pt_id
+  validates_uniqueness_of :gh_id, :gh_number
+  validates_uniqueness_of :pt_id, allow_nil: true
   
   def should_create_story?
     pt_id.blank? && gh_labels.include?(TRIGGERING_LABEL)
@@ -83,5 +84,22 @@ class Ticket
   
   def self.story_from_id(story_id)
     pivotal_project.story(story_id)
+  end
+
+  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state)
+    ticket = Ticket.where(gh_id: gh_id).first
+    params = {
+        gh_number: number,
+        gh_title: title,
+        gh_html_url: html_url,
+        gh_labels: labels,
+        gh_author: author,
+        gh_state: state
+      }
+    if ticket.nil?
+      Ticket.create({gh_id: gh_id}.merge!(params))
+    else
+      ticket.update_attributes(params)
+    end
   end
 end
