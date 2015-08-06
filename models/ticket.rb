@@ -85,5 +85,6 @@ class Ticket
     else
       ticket.update_attributes(params)
     end
+    ticket
   end
 end
