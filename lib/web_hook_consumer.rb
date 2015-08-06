@@ -13,7 +13,7 @@ class WebHookConsumer
     html_url = web_hook.issue["html_url"]
     labels = web_hook.issue["labels"]
     author = web_hook.sender["login"]
-    state = web_hook.action
+    state = web_hook.issue["state"]
 
     Ticket.insert_or_update id, number, title, html_url, labels, author, state
   end
