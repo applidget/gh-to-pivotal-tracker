@@ -3,16 +3,19 @@ require "octokit"
 class GithubSyncer
 
   def run(project)
-    
+    Octokit.auto_paginate = true
     current_page = Octokit.issues APP_CONFIG["github_repo_name"], :access_token => APP_CONFIG["github_access_token"]
-    loop do
-      current_page.each do |issue|
-        puts issue["title"]
-      end
-      debugger
-      current_page = Octokit.last_response.rels[:next].get.data
-      break if current_page == nil
+    current_page.each do |issue|
+      
+      gh_id = issue["id"]
+      gh_number = issue["number"]
+      gh_title = issue["title"]
+      gh_html_url = issue["html_url"]
+      gh_labels = issue["labels"].map{|label| label["name"]}
+      gh_author = "rpechayr" #TODO: change this
+      gh_state = issue["state"]
+      
     end
-    nil
+    
   end
 end

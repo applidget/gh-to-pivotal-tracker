@@ -12,4 +12,5 @@ gem "resque"
 gem "resque-scheduler"
 gem "rake", "10.4.2"
 gem "octokit"
+gem "byebug"
 

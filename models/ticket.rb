@@ -31,7 +31,7 @@ class Ticket
     if @pivotal_story.id
       self.pt_id = @pivotal_story.id
       self.save
-      sync_labels
+      sync
     end
   end
   
@@ -49,11 +49,27 @@ class Ticket
     status != "unscheduled"
   end
   
-  def sync_labels
+  STATE_MAPPING = {
+    "closed" =>
+  }
+  
+  def sync
     return nil if should_create_story?
+    sync_labels
+    sync_state
+    
+  end
+  
+  def sync_state
+    return if should_create_story?
+    story = pivotal_story
+    story.state = self.gh_state
+  end
+  
+  def sync_labels
+    return if should_create_story?
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
-    story.save
   end
   
   def self.pivotal_project
