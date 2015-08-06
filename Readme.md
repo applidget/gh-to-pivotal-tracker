@@ -8,3 +8,23 @@ Github issues are great. You do miss a few features though, including:
 It turns out pivotal tracker has all these features out of the box
 
 This project is a sinatra app that creates a Pivotal Tracker story whenever a new issue is created. It uses github API to register to `issues` hooks. 
+
+##Run it 
+
+    bundle exec rackup -p $PORT
+
+Or
+
+    foreman start
+    
+##Required environment variables 
+- `PIVOTAL_TRACKER_PROJECT_ID`: the id of
+- `PIVOTAL_TRACKER_AUTH_TOKEN`: your api token for pivotal tracker
+
+##Configure github webkhook
+
+Assuming this runs at https://somedomain.com, the webhook you need to configure is : 
+
+- https://somedomaincom/hook
+- you need to register for the following events:
+  - issue
