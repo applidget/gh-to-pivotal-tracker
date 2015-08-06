@@ -6,6 +6,13 @@ class Ticket
   include Mongoid::Document
   include Mongoid::Timestamps
   
+  STATE_MAPPING = {
+    "accepted" => "closed",
+    "unstarted" => "open",
+    "unscheduled" => "open",
+    "started" => "open"
+  }
+  
   #Github issue params
   field :gh_id
   field :gh_number
@@ -52,14 +59,31 @@ class Ticket
   
   def sync
     sync_labels
+    sync_state
+    pivotal_story.save
   end
   
   def sync_labels
     return if pt_id == nil
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
-    story.save
   end
+  
+  def sync_state
+    return if pt_id == nil
+    current_state = pivotal_story["current_state"]
+    if STATE_MAPPING[current_state] != gh_state
+      if gh_state == "open" #Reopen
+        #FIXME: side effect, because if closed from PT, the next hook from GH will mark it as unstarted
+        pivotal_story.current_state = "unstarted"
+        pivotal_story.accepted_at = nil
+      else
+        #Issue has been closed
+        pivotal_story.current_state = "accepted"
+      end
+    end
+  end
+  
   
   def self.pivotal_project
     @@client ||= TrackerApi::Client.new(token: APP_CONFIG["pivotal_tracker_auth_token"].to_s)
