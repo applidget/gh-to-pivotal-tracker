@@ -14,10 +14,11 @@ class WebHookConsumer
     number = web_hook.issue["number"]
     title = web_hook.issue["title"]
     html_url = web_hook.issue["html_url"]
-    labels = web_hook.issue["labels"]
+    labels = web_hook.issue["labels"].map {|label| label["name"]}
     author = web_hook.sender["login"]
     state = web_hook.issue["state"]
     ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state
+    ticket.create_story
     ticket.sync
   end
 end
