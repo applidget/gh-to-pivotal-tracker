@@ -1,4 +1,5 @@
 #As specified here https://github.com/applidget/products/blob/master/docs/drafts/gh-to-pivotal-sync.md#données-sauvegardées
+require "octokit"
 
 TRIGGERING_LABEL = "synced"
 
@@ -12,7 +13,9 @@ class Ticket
     "unscheduled" => "open",
     "started" => "open"
   }
-  
+
+  TRACKER_MESSAGE_PREFIX = "In Pivotal Tracker:"
+
   #Github issue params
   field :gh_id
   field :gh_number
@@ -21,6 +24,7 @@ class Ticket
   field :gh_labels, type: Array, default: []
   field :gh_author
   field :gh_state
+  field :gh_body
 
   #Pivotal Tracker parmas
   field :pt_id
@@ -86,8 +90,8 @@ class Ticket
   
   
   def self.pivotal_project
-    @@client ||= TrackerApi::Client.new(token: APP_CONFIG["pivotal_tracker_auth_token"].to_s)
-    @@project  ||= @@client.project(APP_CONFIG["pivotal_tracker_project_id"])  
+    @@pivotal_client ||= TrackerApi::Client.new(token: APP_CONFIG["pivotal_tracker_auth_token"].to_s)
+    @@pivotal_project  ||= @@pivotal_client.project(APP_CONFIG["pivotal_tracker_project_id"])  
   end
   
   def self.list_stories
@@ -98,7 +102,7 @@ class Ticket
     pivotal_project.story(story_id)
   end
 
-  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state)
+  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state, body)
     ticket = Ticket.where(gh_id: gh_id).first
     params = {
         gh_number: number,
@@ -106,7 +110,8 @@ class Ticket
         gh_html_url: html_url,
         gh_labels: labels,
         gh_author: author,
-        gh_state: state
+        gh_state: state,
+        gh_body: body
       }
     if ticket.nil?
       ticket = Ticket.create({gh_id: gh_id}.merge!(params))
@@ -114,5 +119,23 @@ class Ticket
       ticket.update_attributes(params)
     end
     ticket
+  end
+
+  def github_message
+    story = pivotal_story
+    "#{TRACKER_MESSAGE_PREFIX} [#{story.id}](#{story.url})"
+  end
+
+  def update_github_description
+    if gh_body.blank?
+      gh_body = github_message
+    else
+      self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}:.*/, github_message)
+    end
+    Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, gh_body
+  end
+
+  def self.github_client
+    @@github_client ||= Octokit::Client.new(:access_token => APP_CONFIG["github_access_token"])
   end
 end
