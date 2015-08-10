@@ -3,3 +3,9 @@ sync_latest_webhooks:
   class: ConsumeWebHooksJob
   queue: syncer
   description: "This will take all recently added webhooks and sync them"
+
+sync_github_updaters:
+  every: 5m
+  class: ConsumeGithubUpdaterJob
+  queue: syncer
+  description: "This will update github description in function of Pivotal Tracker tickets"
