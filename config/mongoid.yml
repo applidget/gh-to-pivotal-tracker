@@ -4,3 +4,18 @@ development:
       database: gh-to-pivotal-tracker
       hosts:
         - localhost:27017
+production: 
+  clients:
+    default:
+      hosts:
+<% if ENV['MONGO_REPL_HOSTS_PORTS'] %>
+  <% (ENV['MONGO_REPL_HOSTS_PORTS'] || "").split(",").each do |host_colon_port| %>
+        - <%= host_colon_port %>
+  <% end %>
+<% else %>
+        - localhost:32008
+<% end %>
+      database: "<%= ENV["DATABASE_NAME"] %>"
+      username: "<%= ENV['MONGO_USER'] %>"
+      password: "<%= ENV['MONGO_PASSWD'] %>"
+
