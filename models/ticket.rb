@@ -127,12 +127,9 @@ class Ticket
   end
 
   def update_github_description
-    if gh_body.blank?
-      gh_body = github_message
-    else
-      self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}:.*/, github_message)
-    end
-    Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, gh_body
+    self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}:.*/, '')
+    self.gh_body += "\n" + github_message
+    Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, self.gh_body
   end
 
   def self.github_client
