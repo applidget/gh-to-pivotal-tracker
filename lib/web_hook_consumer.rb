@@ -17,7 +17,8 @@ class WebHookConsumer
     labels = web_hook.issue["labels"].map {|label| label["name"]}
     author = web_hook.sender["login"]
     state = web_hook.issue["state"]
-    ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state
+    body = web_hook.issue["body"]
+    ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state, body
     ticket.create_story
     ticket.sync
   end
