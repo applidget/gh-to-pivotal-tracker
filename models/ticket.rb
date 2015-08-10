@@ -1,7 +1,7 @@
 #As specified here https://github.com/applidget/products/blob/master/docs/drafts/gh-to-pivotal-sync.md#données-sauvegardées
 require "octokit"
 
-TRIGGERING_LABEL = "synced"
+TRIGGERING_LABEL = "tracked"
 
 class Ticket
   include Mongoid::Document
