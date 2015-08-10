@@ -124,8 +124,7 @@ class Ticket
   def github_message
     story = pivotal_story
     message = "#{TRACKER_MESSAGE_PREFIX} [#{story.id}](#{story.url})"
-    message = ", Estimation: #{story.estimate} points" if story.estimate && 
-      !story.estimate.empty?
+    message += ", Estimation: #{story.estimate} points" if !story.estimate.blank?
     message
   end
 
