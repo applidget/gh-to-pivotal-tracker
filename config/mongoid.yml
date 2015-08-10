@@ -16,6 +16,6 @@ production:
         - localhost:32008
 <% end %>
       database: "<%= ENV["DATABASE_NAME"] %>"
-      username: "<%= ENV['MONGO_USER'] %>"
-      password: "<%= ENV['MONGO_PASSWD'] %>"
-
+      options:
+        user: "<%= ENV['MONGO_USER'] %>"
+        password: "<%= ENV['MONGO_PASSWD'] %>"
