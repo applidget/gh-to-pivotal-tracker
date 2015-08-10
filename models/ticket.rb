@@ -130,7 +130,7 @@ class Ticket
   end
 
   def update_github_description
-    self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}:.*/, '')
+    self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}.*/, '')
     self.gh_body += "\n" + github_message
     Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, self.gh_body
   end
