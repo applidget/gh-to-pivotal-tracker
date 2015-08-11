@@ -28,6 +28,7 @@ class Ticket
 
   #Pivotal Tracker parmas
   field :pt_id
+  field :pt_eta
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
@@ -125,16 +126,32 @@ class Ticket
     story = pivotal_story
     message = "#{TRACKER_MESSAGE_PREFIX} [#{story.id}](#{story.url})"
     message += ", Estimation: #{story.estimate} points" if !story.estimate.blank?
+    message += ", ETA: #{pt_eta.strftime("#{pt_eta.day.ordinalize} %B %Y")}" if !pt_eta.blank?
     message
   end
 
   def update_github_description
-    self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}.*/, '')
-    self.gh_body += "\n" + github_message
+    unless self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}.*/, github_message)
+      self.gh_body += github_message
+    end
     Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, self.gh_body
   end
 
   def self.github_client
     @@github_client ||= Octokit::Client.new(:access_token => APP_CONFIG["github_access_token"])
   end
+
+  def self.compute_eta
+    project = pivotal_project
+    project.iterations(scope:"current_backlog").each do |iter|
+      iter.stories.each do |story|
+        puts story.id
+        ticket = Ticket.where(pt_id: story.id).first
+        unless ticket.nil?
+          ticket.update({pt_eta: iter.finish - 2})
+        end
+      end
+    end
+  end
+
 end
