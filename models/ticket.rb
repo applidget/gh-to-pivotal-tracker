@@ -28,7 +28,8 @@ class Ticket
 
   #Pivotal Tracker parmas
   field :pt_id
-  field :pt_eta
+  field :pt_current_eta
+  field :pt_old_eta
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
@@ -126,7 +127,8 @@ class Ticket
     story = pivotal_story
     message = "#{TRACKER_MESSAGE_PREFIX} [#{story.id}](#{story.url})"
     message += ", Estimation: #{story.estimate} points" if !story.estimate.blank?
-    message += ", ETA: #{pt_eta.strftime("#{pt_eta.day.ordinalize} %B %Y")}" if !pt_eta.blank?
+    message += ", ETA: #{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}" if !pt_current_eta.blank?
+    message += ", initial ETA: #{pt_old_eta.strftime("#{pt_old_eta.day.ordinalize} %B %Y")}" if !pt_old_eta.blank?
     message
   end
 
@@ -145,10 +147,12 @@ class Ticket
     project = pivotal_project
     project.iterations(scope:"current_backlog").each do |iter|
       iter.stories.each do |story|
-        puts story.id
         ticket = Ticket.where(pt_id: story.id).first
         unless ticket.nil?
-          ticket.update({pt_eta: iter.finish - 2})
+          if ticket.pt_current_eta.present? && ticket.pt_old_eta.nil? && ticket.pt_current_eta != iter.finish - 2
+            ticket.update({pt_old_eta: ticket.pt_current_eta })
+          end
+          ticket.update({pt_current_eta: iter.finish - 2})
         end
       end
     end
