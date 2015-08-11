@@ -148,7 +148,7 @@ class Ticket
         puts story.id
         ticket = Ticket.where(pt_id: story.id).first
         unless ticket.nil?
-          ticket.update({pt_eta: iter.finish})
+          ticket.update({pt_eta: iter.finish - 2})
         end
       end
     end
