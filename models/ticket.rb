@@ -29,7 +29,7 @@ class Ticket
   #Pivotal Tracker parmas
   field :pt_id
   field :pt_current_eta
-  field :pt_old_eta
+  field :pt_previous_eta
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
@@ -128,7 +128,7 @@ class Ticket
     message = "#{TRACKER_MESSAGE_PREFIX} [#{story.id}](#{story.url})"
     message += ", Estimation: #{story.estimate} points" if !story.estimate.blank?
     message += ", ETA: #{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}" if !pt_current_eta.blank?
-    message += ", initial ETA: #{pt_old_eta.strftime("#{pt_old_eta.day.ordinalize} %B %Y")}" if !pt_old_eta.blank?
+    message += ", previous ETA: #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")}" if !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
     message
   end
 
@@ -149,10 +149,11 @@ class Ticket
       iter.stories.each do |story|
         ticket = Ticket.where(pt_id: story.id).first
         unless ticket.nil?
-          if ticket.pt_current_eta.present? && ticket.pt_old_eta.nil? && ticket.pt_current_eta != iter.finish - 2
-            ticket.update({pt_old_eta: ticket.pt_current_eta })
+          if ticket.pt_current_eta.blank?
+            ticket.update({pt_current_eta: iter.finish - 2 })
+          elsif ticket.pt_current_eta != iter.finish - 2
+            ticket.update({pt_previous_eta: ticket.pt_current_eta,pt_current_eta: iter.finish - 2})
           end
-          ticket.update({pt_current_eta: iter.finish - 2})
         end
       end
     end
