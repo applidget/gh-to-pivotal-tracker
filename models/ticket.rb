@@ -125,15 +125,22 @@ class Ticket
 
   def github_message
     story = pivotal_story
-    message = "#{TRACKER_MESSAGE_PREFIX} [#{story.id}](#{story.url})"
-    message += ", Estimation: #{story.estimate} points" if !story.estimate.blank?
-    message += ", ETA: #{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}" if !pt_current_eta.blank?
-    message += ", previous ETA: #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")}" if !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
+    message = "\n\n---\n"
+    message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
+    message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
+    message += eta_string
+    message += "\n\n---\n"
+  end
+
+
+  def eta_string display_previous = false
+    message = "*ETA*: **#{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}**" if !pt_current_eta.blank?
+    message += " ( was #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")})\n" if display_previous && !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
     message
   end
 
   def update_github_description
-    unless self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}.*/, github_message)
+    unless self.gh_body.gsub!(/^---(.|\n)*---/m, github_message)
       self.gh_body += github_message
     end
     Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, self.gh_body
