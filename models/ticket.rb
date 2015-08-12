@@ -160,7 +160,7 @@ class Ticket
             ticket.update_attributes({pt_current_eta: iter.finish - 2})
           elsif ticket.pt_current_eta != iter.finish - 2
             current_eta = ticket.pt_current_eta
-            ticket.update_attributes({pt_current_eta: iter.finish - 2,pt_previous_eta: current_eta})
+            ticket.update_attributes({pt_current_eta: iter.finish - 2, pt_previous_eta: current_eta})
           end
         end
       end
