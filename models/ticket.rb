@@ -14,7 +14,7 @@ class Ticket
     "started" => "open"
   }
 
-  TRACKER_MESSAGE_PREFIX = "In Pivotal Tracker:"
+  TOKEN = "--- "
 
   #Github issue params
   field :gh_id
@@ -28,7 +28,8 @@ class Ticket
 
   #Pivotal Tracker parmas
   field :pt_id
-  field :pt_eta
+  field :pt_current_eta
+  field :pt_previous_eta
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
@@ -124,14 +125,22 @@ class Ticket
 
   def github_message
     story = pivotal_story
-    message = "#{TRACKER_MESSAGE_PREFIX} [#{story.id}](#{story.url})"
-    message += ", Estimation: #{story.estimate} points" if !story.estimate.blank?
-    message += ", ETA: #{pt_eta.strftime("#{pt_eta.day.ordinalize} %B %Y")}" if !pt_eta.blank?
+    message = "\n\n#{TOKEN}\n"
+    message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
+    message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
+    message += eta_string
+    message += "\n\n#{TOKEN}\n"
+  end
+
+
+  def eta_string display_previous = false
+    message = "*ETA*: **#{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}**" if !pt_current_eta.blank?
+    message += " (was #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")})\n" if display_previous && !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
     message
   end
 
   def update_github_description
-    unless self.gh_body.gsub!(/^#{TRACKER_MESSAGE_PREFIX}.*/, github_message)
+    unless self.gh_body.gsub!(/^#{TOKEN}(.|\n)*#{TOKEN}/m, github_message)
       self.gh_body += github_message
     end
     Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, self.gh_body
@@ -145,10 +154,14 @@ class Ticket
     project = pivotal_project
     project.iterations(scope:"current_backlog").each do |iter|
       iter.stories.each do |story|
-        puts story.id
         ticket = Ticket.where(pt_id: story.id).first
         unless ticket.nil?
-          ticket.update({pt_eta: iter.finish - 2})
+          if ticket.pt_current_eta.blank?
+            ticket.update_attributes({pt_current_eta: iter.finish - 2})
+          elsif ticket.pt_current_eta != iter.finish - 2
+            current_eta = ticket.pt_current_eta
+            ticket.update_attributes({pt_current_eta: iter.finish - 2, pt_previous_eta: current_eta})
+          end
         end
       end
     end
