@@ -1,4 +1,4 @@
-class ConsumeGithubUpdaterJob
+class GithubUpdaterJob
   @queue = :main
   def self.perform
     consumer = GithubUpdater.new

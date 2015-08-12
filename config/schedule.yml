@@ -6,6 +6,6 @@ sync_latest_webhooks:
 
 sync_github_updaters:
   every: 5m
-  class: ConsumeGithubUpdaterJob
+  class: GithubUpdaterJob
   queue: syncer
   description: "This will update github description in function of Pivotal Tracker tickets"
