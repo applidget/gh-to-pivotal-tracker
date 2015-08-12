@@ -172,12 +172,10 @@ class Ticket
         ticket = Ticket.where(pt_id: story.id).first
         unless ticket.nil?
           if ticket.pt_current_eta.blank?
-            ticket.update_attributes({pt_current_eta: iter.finish - 2})
-            self.gh_need_comment = true
+            ticket.update_attributes({pt_current_eta: iter.finish - 2, gh_need_comment: true})
           elsif ticket.pt_current_eta != iter.finish - 2
             current_eta = ticket.pt_current_eta
-            ticket.update_attributes({pt_current_eta: iter.finish - 2, pt_previous_eta: current_eta})
-            self.gh_need_comment = true
+            ticket.update_attributes({pt_current_eta: iter.finish - 2, pt_previous_eta: current_eta, gh_need_comment: true})
           end
         end
       end
