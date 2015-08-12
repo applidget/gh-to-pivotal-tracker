@@ -25,6 +25,7 @@ class Ticket
   field :gh_author
   field :gh_state
   field :gh_body
+  field :gh_need_comment, type: Boolean, default: false
 
   #Pivotal Tracker parmas
   field :pt_id
@@ -132,6 +133,9 @@ class Ticket
     message += "\n\n#{TOKEN}\n"
   end
 
+  def github_comment icon = ":checkered_flag:"
+    message = "#{icon} *New* #{eta_string true}\nView in [Pivotal Tracker](#{pivotal_story.url})" 
+  end
 
   def eta_string display_previous = false
     message = "*ETA*: **#{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}**" if !pt_current_eta.blank?
@@ -150,6 +154,17 @@ class Ticket
     @@github_client ||= Octokit::Client.new(:access_token => APP_CONFIG["github_access_token"])
   end
 
+  def manage_comment
+    if gh_need_comment
+      create_comment
+      self.gh_need_comment = false
+    end
+  end
+
+  def create_comment
+    Ticket.github_client.add_comment APP_CONFIG["github_repo_name"], gh_number, github_comment
+  end
+
   def self.compute_eta
     project = pivotal_project
     project.iterations(scope:"current_backlog").each do |iter|
@@ -158,9 +173,11 @@ class Ticket
         unless ticket.nil?
           if ticket.pt_current_eta.blank?
             ticket.update_attributes({pt_current_eta: iter.finish - 2})
+            self.gh_need_comment = true
           elsif ticket.pt_current_eta != iter.finish - 2
             current_eta = ticket.pt_current_eta
             ticket.update_attributes({pt_current_eta: iter.finish - 2, pt_previous_eta: current_eta})
+            self.gh_need_comment = true
           end
         end
       end
