@@ -50,7 +50,7 @@ class Ticket
   end
   
   def pivotal_story
-    return nil if should_create_story?
+    return nil if pt_id.nil?
     @pivotal_story ||= Ticket.story_from_id(self.pt_id)
   end
 
