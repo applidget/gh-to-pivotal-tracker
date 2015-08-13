@@ -6,6 +6,7 @@ class GithubUpdater
       next if ticket.pivotal_story.nil?
       if %w(unscheduled unstarted started).include?(ticket.pivotal_story.current_state)
         ticket.update_github_description
+        ticket.manage_comment
       end
     end
   end
