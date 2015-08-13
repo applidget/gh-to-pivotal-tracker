@@ -158,7 +158,7 @@ class Ticket
   def manage_comment
     if gh_need_comment
       create_comment
-      self.gh_need_comment = false
+      self.set(:gh_need_comment => false)
     end
   end
 
