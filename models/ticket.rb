@@ -133,10 +133,10 @@ class Ticket
   end
 
 
-  def eta_string display_previous = false
+  def eta_string(display_previous = false)
     message = "*ETA*: **#{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}**" if !pt_current_eta.blank?
     message += " (was #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")})\n" if display_previous && !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
-    message
+    message ||= ""
   end
 
   def update_github_description
