@@ -65,6 +65,7 @@ class Ticket
   end
   
   def sync
+    return if pt_id == nil
     sync_labels
     sync_state
     pivotal_story.save
