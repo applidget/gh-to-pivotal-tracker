@@ -134,7 +134,7 @@ class Ticket
     message += "\n\n#{TOKEN}\n"
   end
 
-  def github_comment icon = ":checkered_flag:"
+  def github_comment(icon = ":checkered_flag:")
     message = "#{icon} *New* #{eta_string true}\nView in [Pivotal Tracker](#{pivotal_story.url})" 
   end
 
@@ -143,8 +143,15 @@ class Ticket
     message += " (was #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")})\n" if display_previous && !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
     message ||= ""
   end
+  
+  def refresh_issue
+    gh_issue = Ticket.github_client.isssue APP_CONFIG["github_repo_name"], gh_number
+    self.gh_body = gh_issue[:body]
+    self.save
+  end
 
   def update_github_description
+    refresh_issue
     unless self.gh_body.gsub!(/^#{TOKEN}(.|\n)*#{TOKEN}/m, github_message)
       self.gh_body += github_message
     end
