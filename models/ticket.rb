@@ -156,12 +156,16 @@ class Ticket
     return new_desc != self.gh_body
   end
   
-  def computed_github_description
-    body = self.gh_body
-    unless body.gsub!(/^#{TOKEN}(.|\n)*#{TOKEN}/m, github_message)
-      body += github_message
+  #This method appears to block (for how long) for some examples of `from`
+  def replace_or_append(from, to_insert, regex)
+    unless from.gsub!(regex, to_insert)
+      from += to_insert
     end
-    body
+    from
+  end
+  
+  def computed_github_description
+    replace_or_append(self.gh_body, github_message, /^#{TOKEN}(.|\n)*#{TOKEN}/m)
   end
 
   def update_github_description
