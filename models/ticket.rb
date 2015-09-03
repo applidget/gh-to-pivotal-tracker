@@ -147,6 +147,7 @@ class Ticket
   def refresh_issue
     iss = Ticket.github_client.issue APP_CONFIG["github_repo_name"], gh_number
     self.gh_body = iss[:body]
+    self.gh_title = iss[:title]
     save
   end
   
