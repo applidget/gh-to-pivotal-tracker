@@ -147,14 +147,30 @@ class Ticket
   def refresh_issue
     iss = Ticket.github_client.issue APP_CONFIG["github_repo_name"], gh_number
     self.gh_body = iss[:body]
+    save
+  end
+  
+  def should_update_github_description?
+    new_desc = computed_github_description
+    return new_desc != self.gh_body
+  end
+  
+  def computed_github_description
+    body = self.gh_body
+    unless body.gsub!(/^#{TOKEN}(.|\n)*#{TOKEN}/m, github_message)
+      body += github_message
+    end
+    body
   end
 
   def update_github_description
+    #1. Get up to date description from github
+    return unless should_update_github_description?
     refresh_issue
-    unless self.gh_body.gsub!(/^#{TOKEN}(.|\n)*#{TOKEN}/m, github_message)
-      self.gh_body += github_message
-    end
-    Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, self.gh_body
+    new_body = computed_github_description
+    Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, new_body
+    self.gh_body = new_body
+    save
   end
 
   def self.github_client
