@@ -127,7 +127,7 @@ class Ticket
 
   def github_message
     story = pivotal_story
-    message = "\n\n#{TOKEN}\n"
+    message = "\n#{TOKEN}\n"
     message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
     message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
     message += eta_string
@@ -165,11 +165,11 @@ class Ticket
   end
   
   def computed_github_description
-    replace_or_append(self.gh_body, github_message, /^#{TOKEN}(.|\n)*#{TOKEN}/m)
+    replace_or_append(self.gh_body, github_message, /^\n#{TOKEN}(?>.|\n)*#{TOKEN}\n/m)
   end
 
   def update_github_description
-    #1. Get up to date description from github
+    #Get up to date description from github
     return unless should_update_github_description?
     refresh_issue
     new_body = computed_github_description
