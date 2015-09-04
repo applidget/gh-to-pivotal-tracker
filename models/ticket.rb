@@ -127,7 +127,7 @@ class Ticket
 
   def github_message
     story = pivotal_story
-    message = "\n\n#{TOKEN}\n"
+    message = "\n#{TOKEN}\n"
     message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
     message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
     message += eta_string
@@ -156,16 +156,20 @@ class Ticket
     return new_desc != self.gh_body
   end
   
-  def computed_github_description
-    body = self.gh_body
-    unless body.gsub!(/^#{TOKEN}(.|\n)*#{TOKEN}/m, github_message)
-      body += github_message
+  #This method appears to block (for how long) for some examples of `from`
+  def replace_or_append(from, to_insert, regex)
+    unless from.gsub!(regex, to_insert)
+      from += to_insert
     end
-    body
+    from
+  end
+  
+  def computed_github_description
+    replace_or_append(self.gh_body, github_message, /^\n#{TOKEN}(?>.|\n)*#{TOKEN}\n/m)
   end
 
   def update_github_description
-    #1. Get up to date description from github
+    #Get up to date description from github
     return unless should_update_github_description?
     refresh_issue
     new_body = computed_github_description
