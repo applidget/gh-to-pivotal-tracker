@@ -15,8 +15,8 @@ describe WebHook do
     @web_hook = WebHook.new issue: issue , action: {key: "value"}, sender: {key: "value"}
   end
 
-  describe "#something" do
-    it "runs some test" do
+  describe "creation" do
+    it "creates a basic webhook with some fake data" do
       expect(@web_hook).to be_valid
     end
   end
