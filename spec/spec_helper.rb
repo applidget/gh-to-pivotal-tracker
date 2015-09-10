@@ -2,8 +2,10 @@ ENV['RACK_ENV'] = 'test'
 
 
 require "./environment"
-
+require 'webmock/rspec'
 require 'rack/test'
+require 'factory_girl'
+require 'factories'
 
 set :environment, :test
 
