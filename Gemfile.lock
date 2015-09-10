@@ -26,6 +26,7 @@ GEM
     columnize (0.9.0)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
+    diff-lcs (1.2.5)
     equalizer (0.0.11)
     excon (0.45.4)
     faraday (0.9.1)
@@ -82,6 +83,19 @@ GEM
       rack (>= 1.0)
       rack-test (~> 0.6.2)
       ripl (>= 0.7.0)
+    rspec (3.2.0)
+      rspec-core (~> 3.2.0)
+      rspec-expectations (~> 3.2.0)
+      rspec-mocks (~> 3.2.0)
+    rspec-core (3.2.3)
+      rspec-support (~> 3.2.0)
+    rspec-expectations (3.2.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-mocks (3.2.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-support (3.2.2)
     rufus-scheduler (2.0.24)
       tzinfo (>= 0.3.22)
     sawyer (0.6.0)
@@ -137,6 +151,7 @@ DEPENDENCIES
   rake (= 10.4.2)
   resque
   resque-scheduler (~> 3.1)
+  rspec
   sinatra
   sinatra-contrib
   tracker_api
