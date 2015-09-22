@@ -27,4 +27,10 @@ class GithubDescriptionHandler
     message ||= ""
   end
   
+  def self.eta_comment(options)
+    icon = options.delete(:icon) || ":checkered_flag:"
+    url = options.delete(:url)
+    message = "#{icon} *New* #{self.eta_string(options)}\nView in [Pivotal Tracker](#{url})" 
+  end
+  
 end
