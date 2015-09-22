@@ -143,9 +143,9 @@ class Ticket
       id: story.id, 
       url: story.url,
       estimate: story.estimate,
-      curent: pt_current_eta,
+      current: pt_current_eta,
       previous: pt_previous_eta,
-      body: self.gh_body
+      body: gh_body
     }
     GithubDescriptionHandler.process_description options
   end

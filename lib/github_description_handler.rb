@@ -1,7 +1,7 @@
 class GithubDescriptionHandler
   
   DELIMITER = "--- "
-  REGEX = /\n{2}#{DELIMITER}(?>.|\n)*#{DELIMITER}\n/m
+  REGEX = /[\r?\n]{2}#{DELIMITER}(?>.|\n)*#{DELIMITER}\n/m
   
   #This method appears to block (for how long) for some examples of `from`
   def self.replace_or_append(from, to_insert, regex)
