@@ -1,6 +1,7 @@
 class GithubDescriptionHandler
   
   DELIMITER = "--- "
+  REGEX = /^\n\n#{DELIMITER}(?>.|\n)*#{DELIMITER}\n/m
   
   #This method appears to block (for how long) for some examples of `from`
   def self.replace_or_append(from, to_insert, regex)
@@ -10,12 +11,15 @@ class GithubDescriptionHandler
     from
   end
   
-  def self.github_message(story)
-    message = "\n#{TOKEN}\n"
-    message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
-    message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
-    message += eta_string
-    message += "\n\n#{TOKEN}\n"
+  def self.github_message(options)
+    id = options.delete(:id)
+    url = options.delete(:url)
+    estimate = options.delete(:estimate)
+    message = "\n\n#{DELIMITER}\n"
+    message += "**Pivotal Tracker** - [##{id}](#{url})\n"
+    message += "*Estimation*: **#{estimate} points**\n" if !estimate.blank?
+    message += eta_string(options)
+    message += "\n\n#{DELIMITER}\n"
   end
   
   def self.eta_string(options)

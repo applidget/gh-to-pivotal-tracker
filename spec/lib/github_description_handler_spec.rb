@@ -75,5 +75,4 @@ describe GithubDescriptionHandler do
     expect(res).to eq(expected)
   end
   
-  
 end
