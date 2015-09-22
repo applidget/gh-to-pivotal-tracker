@@ -137,19 +137,17 @@ class Ticket
     return new_desc != self.gh_body
   end
   
-  
-  
   def computed_github_description
     story = pivotal_story
-    
-    gh_message = GithubDescriptionHandler.github_message({
+    options = {
       id: story.id, 
       url: story.url,
       estimate: story.estimate,
       curent: pt_current_eta,
-      previous: pt_previous_eta
-    })
-    GithubDescriptionHandler.replace_or_append(self.gh_body, github_message, /^\n#{TOKEN}(?>.|\n)*#{TOKEN}\n/m)
+      previous: pt_previous_eta,
+      body: self.gh_body
+    }
+    GithubDescriptionHandler.process_description options
   end
 
   def update_github_description
@@ -193,5 +191,4 @@ class Ticket
       end
     end
   end
-
 end
