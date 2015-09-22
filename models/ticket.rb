@@ -172,7 +172,14 @@ class Ticket
   end
 
   def create_comment
-    Ticket.github_client.add_comment APP_CONFIG["github_repo_name"], gh_number, github_comment
+    options = {
+      current: self.pt_current_eta,
+      previous: self.pt_previous_eta,
+      display_previous: true,
+      url: pivotal_story.url
+     }
+    comment = GithubDescriptionHandler.eta_comment options
+    Ticket.github_client.add_comment APP_CONFIG["github_repo_name"], gh_number, comment
   end
 
   def self.compute_eta
