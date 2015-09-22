@@ -75,7 +75,7 @@ describe GithubDescriptionHandler do
     expect(res).to eq(expected)
   end
   
-  it "updates a github description correctly, even when called a second time", focus: true do 
+  it "updates a github description correctly, even when called a second time" do 
     eta1 = Date.parse('2015-11-03') 
     eta2 = Date.parse('2015-11-06')
     body = %{Hello}
@@ -103,15 +103,7 @@ describe GithubDescriptionHandler do
     }
     
     res2 = GithubDescriptionHandler.process_description options
-    expected2 = %{Hello
-
---- 
-**Pivotal Tracker** - [#87656789](http://apple.com)
-
-
---- 
-}
-    expect(res2).to eq(expected2)
+    expect(res2).to eq(expected)
     
   end
   
