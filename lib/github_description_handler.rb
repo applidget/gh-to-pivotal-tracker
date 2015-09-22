@@ -22,6 +22,12 @@ class GithubDescriptionHandler
     message += "\n\n#{DELIMITER}\n"
   end
   
+  def self.process_description(options)
+    body = options.delete(:body)
+    gh_message = GithubDescriptionHandler.github_message(options)
+    GithubDescriptionHandler.replace_or_append(body, gh_message, REGEX)
+  end
+  
   def self.eta_string(options)
     pt_current_eta = options.delete(:current)
     pt_previous_eta = options.delete(:previous) 
@@ -34,6 +40,7 @@ class GithubDescriptionHandler
   def self.eta_comment(options)
     icon = options.delete(:icon) || ":checkered_flag:"
     url = options.delete(:url)
+    options[:display_previous] = true
     message = "#{icon} *New* #{self.eta_string(options)}\nView in [Pivotal Tracker](#{url})" 
   end
   

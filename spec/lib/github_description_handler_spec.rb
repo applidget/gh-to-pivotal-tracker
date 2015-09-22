@@ -75,4 +75,33 @@ describe GithubDescriptionHandler do
     expect(res).to eq(expected)
   end
   
+  it "updates a github description correctly", focus: true do 
+    eta1 = Date.parse('2015-11-03') 
+    eta2 = Date.parse('2015-11-06')
+    body = %{
+      This is a real issue. Already reported a while ago. 
+      Hope it will be fixed soon ...}
+    options = {
+      id: "87656789", 
+      url: "http://apple.com",
+      estimate: 3,
+      curent: eta1,
+      previous: eta2,
+      body: body
+    }
+    res = GithubDescriptionHandler.process_description options
+    expected = %{
+      This is a real issue. Already reported a while ago. 
+      Hope it will be fixed soon ...
+
+--- 
+**Pivotal Tracker** - [#87656789](http://apple.com)
+*Estimation*: **3 points**
+
+
+--- 
+}
+    expect(res).to eq(expected)
+  end
+  
 end
