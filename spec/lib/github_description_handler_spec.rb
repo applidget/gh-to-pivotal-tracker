@@ -66,7 +66,7 @@ describe GithubDescriptionHandler do
     expect(res).to eq("*ETA*: **3rd November 2015** (was 6th November 2015)")
   end
   
-  it "correctly formats an ETA comment", focus: true do
+  it "correctly formats an ETA comment" do
     eta1 = Date.parse('2015-11-03') 
     eta2 = Date.parse('2015-11-06')
     url = "http://google.com"
