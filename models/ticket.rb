@@ -124,25 +124,6 @@ class Ticket
     end
     ticket
   end
-
-  def github_message
-    story = pivotal_story
-    message = "\n#{TOKEN}\n"
-    message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
-    message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
-    message += eta_string
-    message += "\n\n#{TOKEN}\n"
-  end
-
-  def github_comment(icon = ":checkered_flag:")
-    message = "#{icon} *New* #{eta_string true}\nView in [Pivotal Tracker](#{pivotal_story.url})" 
-  end
-
-  def eta_string(display_previous = false)
-    message = "*ETA*: **#{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}**" if !pt_current_eta.blank?
-    message += " (was #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")})\n" if display_previous && !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
-    message ||= ""
-  end
   
   def refresh_issue
     iss = Ticket.github_client.issue APP_CONFIG["github_repo_name"], gh_number
@@ -156,16 +137,19 @@ class Ticket
     return new_desc != self.gh_body
   end
   
-  #This method appears to block (for how long) for some examples of `from`
-  def replace_or_append(from, to_insert, regex)
-    unless from.gsub!(regex, to_insert)
-      from += to_insert
-    end
-    from
-  end
+  
   
   def computed_github_description
-    replace_or_append(self.gh_body, github_message, /^\n#{TOKEN}(?>.|\n)*#{TOKEN}\n/m)
+    story = pivotal_story
+    
+    gh_message = GithubDescriptionHandler.github_message({
+      id: story.id, 
+      url: story.url,
+      estimate: story.estimate,
+      curent: pt_current_eta,
+      previous: pt_previous_eta
+    })
+    GithubDescriptionHandler.replace_or_append(self.gh_body, github_message, /^\n#{TOKEN}(?>.|\n)*#{TOKEN}\n/m)
   end
 
   def update_github_description
