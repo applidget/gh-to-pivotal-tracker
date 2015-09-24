@@ -12,6 +12,7 @@ describe WebHookConsumer do
       "state" => "open",
       "body" => "Some really short body"
     }
+    stub_request(:any, "www.pivotaltracker.com")
     web_hook = WebHook.create issue: issue , action: {key: "value"}, sender: {key: "value"}
     consumer = WebHookConsumer.new
     consumer.sync
