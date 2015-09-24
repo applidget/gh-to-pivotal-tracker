@@ -145,7 +145,7 @@ class Ticket
       estimate: story.estimate,
       current: pt_current_eta,
       previous: pt_previous_eta,
-      body: gh_body.dup
+      body: gh_body
     }
     GithubDescriptionHandler.process_description options
   end

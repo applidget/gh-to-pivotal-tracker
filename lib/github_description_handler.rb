@@ -24,7 +24,7 @@ class GithubDescriptionHandler
   end
   
   def self.process_description(options)
-    body = options.delete(:body)
+    body = options.delete(:body).dup
     gh_message = GithubDescriptionHandler.github_message(options)
     GithubDescriptionHandler.replace_or_append(body, gh_message, REGEX)
   end
