@@ -87,6 +87,7 @@ class Ticket
         pivotal_story.accepted_at = nil
       else
         #Issue has been closed
+        pivotal_story.estimate = 0 if pivotal_story.estimate.blank?
         pivotal_story.current_state = "accepted"
       end
     end
