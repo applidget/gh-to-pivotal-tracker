@@ -1,4 +1,5 @@
 require 'spec_helper'
+require "byebug"
 
 describe GithubDescriptionHandler do
   
@@ -13,7 +14,7 @@ describe GithubDescriptionHandler do
       - [ ] TODO3
       
       ---
-    }
+}
     
     result = GithubDescriptionHandler.replace_or_append(text, "something", /---/)
     expected = %{
@@ -26,7 +27,7 @@ describe GithubDescriptionHandler do
       - [ ] TODO3
       
       something
-    }
+}
     
     expect(result).to eq(expected)
   end
@@ -39,8 +40,7 @@ describe GithubDescriptionHandler do
               Process the following TODO list:
               - [ ] TODO1
               - [ ] TODO2
-              - [ ] TODO3
-            }
+              - [ ] TODO3}
     
     result = GithubDescriptionHandler.replace_or_append(text, "something", /---/)
     expected = %{
@@ -51,7 +51,7 @@ describe GithubDescriptionHandler do
               - [ ] TODO1
               - [ ] TODO2
               - [ ] TODO3
-            something}
+something}
     
     expect(result).to eq(expected)
   end
@@ -101,7 +101,6 @@ describe GithubDescriptionHandler do
       url: "http://apple.com",
       body: res
     }
-    
     res2 = GithubDescriptionHandler.process_description options
     expect(res2).to eq(expected)
     
