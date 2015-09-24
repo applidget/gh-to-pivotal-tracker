@@ -8,6 +8,8 @@ test:
   clients:
     default:
       database: gh-to-pivotal-tracker-test
+      user: travis
+      password: test
       hosts:
         - localhost:27017
 production: 
