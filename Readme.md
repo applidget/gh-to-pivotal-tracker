@@ -1,4 +1,6 @@
-#Github issues to Pivotal Tracker
+# Github issues to Pivotal Tracker
+
+![](https://travis-ci.org/applidget/gh-to-pivotal-tracker.svg)
 
 Github issues are great. You do miss a few features though, including:
 - Ability to order issues 

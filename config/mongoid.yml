@@ -4,6 +4,14 @@ development:
       database: gh-to-pivotal-tracker
       hosts:
         - localhost:27017
+test:
+  clients:
+    default:
+      database: gh-to-pivotal-tracker-test
+      user: travis
+      password: test
+      hosts:
+        - localhost:27017
 production: 
   clients:
     default:

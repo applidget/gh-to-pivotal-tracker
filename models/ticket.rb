@@ -87,6 +87,7 @@ class Ticket
         pivotal_story.accepted_at = nil
       else
         #Issue has been closed
+        pivotal_story.estimate = 0 if pivotal_story.estimate.blank?
         pivotal_story.current_state = "accepted"
       end
     end
@@ -124,25 +125,6 @@ class Ticket
     end
     ticket
   end
-
-  def github_message
-    story = pivotal_story
-    message = "\n#{TOKEN}\n"
-    message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
-    message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
-    message += eta_string
-    message += "\n\n#{TOKEN}\n"
-  end
-
-  def github_comment(icon = ":checkered_flag:")
-    message = "#{icon} *New* #{eta_string true}\nView in [Pivotal Tracker](#{pivotal_story.url})" 
-  end
-
-  def eta_string(display_previous = false)
-    message = "*ETA*: **#{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}**" if !pt_current_eta.blank?
-    message += " (was #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")})\n" if display_previous && !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
-    message ||= ""
-  end
   
   def refresh_issue
     iss = Ticket.github_client.issue APP_CONFIG["github_repo_name"], gh_number
@@ -156,16 +138,17 @@ class Ticket
     return new_desc != self.gh_body
   end
   
-  #This method appears to block (for how long) for some examples of `from`
-  def replace_or_append(from, to_insert, regex)
-    unless from.gsub!(regex, to_insert)
-      from += to_insert
-    end
-    from
-  end
-  
   def computed_github_description
-    replace_or_append(self.gh_body, github_message, /^\n#{TOKEN}(?>.|\n)*#{TOKEN}\n/m)
+    story = pivotal_story
+    options = {
+      id: story.id, 
+      url: story.url,
+      estimate: story.estimate,
+      current: pt_current_eta,
+      previous: pt_previous_eta,
+      body: gh_body
+    }
+    GithubDescriptionHandler.process_description options
   end
 
   def update_github_description
@@ -190,7 +173,14 @@ class Ticket
   end
 
   def create_comment
-    Ticket.github_client.add_comment APP_CONFIG["github_repo_name"], gh_number, github_comment
+    options = {
+      current: self.pt_current_eta,
+      previous: self.pt_previous_eta,
+      display_previous: true,
+      url: pivotal_story.url
+     }
+    comment = GithubDescriptionHandler.eta_comment options
+    Ticket.github_client.add_comment APP_CONFIG["github_repo_name"], gh_number, comment
   end
 
   def self.compute_eta
@@ -209,5 +199,4 @@ class Ticket
       end
     end
   end
-
 end
