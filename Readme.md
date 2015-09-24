@@ -1,6 +1,6 @@
 # Github issues to Pivotal Tracker
 
-![](https://travis-ci.org/applidget/gh-to-pivotal-tracker.svg)
+![](https://circleci.com/gh/applidget/gh-to-pivotal-tracker.png?style=shield&circle-token=378b721a0ca22774a664fe70e4b1a85228fad86a)
 
 Github issues are great. You do miss a few features though, including:
 - Ability to order issues 
