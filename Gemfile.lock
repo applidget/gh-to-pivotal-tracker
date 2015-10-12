@@ -17,17 +17,22 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     backports (3.6.6)
     bond (0.5.1)
-    bson (3.2.1)
+    bson (3.2.4)
     builder (3.2.2)
     byebug (5.0.0)
       columnize (= 0.9.0)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     columnize (0.9.0)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
+    diff-lcs (1.2.5)
     equalizer (0.0.11)
     excon (0.45.4)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.10.0)
@@ -36,11 +41,11 @@ GEM
     ice_nine (0.11.1)
     json (1.8.3)
     minitest (5.7.0)
-    mongo (2.1.0.beta)
+    mongo (2.1.0)
       bson (~> 3.0)
-    mongoid (5.0.0.beta)
+    mongoid (5.0.0)
       activemodel (~> 4.0)
-      mongo (= 2.1.0.beta)
+      mongo (~> 2.1)
       origin (~> 2.1)
       tzinfo (>= 0.3.37)
     mono_logger (1.1.0)
@@ -82,8 +87,22 @@ GEM
       rack (>= 1.0)
       rack-test (~> 0.6.2)
       ripl (>= 0.7.0)
+    rspec (3.2.0)
+      rspec-core (~> 3.2.0)
+      rspec-expectations (~> 3.2.0)
+      rspec-mocks (~> 3.2.0)
+    rspec-core (3.2.3)
+      rspec-support (~> 3.2.0)
+    rspec-expectations (3.2.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-mocks (3.2.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.2.0)
+    rspec-support (3.2.2)
     rufus-scheduler (2.0.24)
       tzinfo (>= 0.3.22)
+    safe_yaml (1.0.4)
     sawyer (0.6.0)
       addressable (~> 2.3.5)
       faraday (~> 0.8, < 0.10)
@@ -124,23 +143,29 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
+    webmock (1.21.0)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   byebug
-  mongoid (= 5.0.0.beta)
+  factory_girl
+  mongoid (= 5.0.0)
   multi_json
   octokit
   rack-contrib (~> 1.1.0)
   rake (= 10.4.2)
   resque
   resque-scheduler (~> 3.1)
+  rspec
   sinatra
   sinatra-contrib
   tracker_api
   tux
+  webmock
 
 BUNDLED WITH
    1.10.6

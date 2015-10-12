@@ -89,6 +89,7 @@ class Ticket
         pivotal_story.accepted_at = nil
       else
         #Issue has been closed
+        pivotal_story.estimate = 0 if pivotal_story.estimate.blank?
         pivotal_story.current_state = "accepted"
       end
     end
@@ -126,31 +127,40 @@ class Ticket
     end
     ticket
   end
-
-  def github_message
+  
+  def refresh_issue
+    iss = Ticket.github_client.issue APP_CONFIG["github_repo_name"], gh_number
+    self.gh_body = iss[:body]
+    self.gh_title = iss[:title]
+    save
+  end
+  
+  def should_update_github_description?
+    new_desc = computed_github_description
+    return new_desc != self.gh_body
+  end
+  
+  def computed_github_description
     story = pivotal_story
-    message = "\n\n#{TOKEN}\n"
-    message += "**Pivotal Tracker** - [##{story.id}](#{story.url})\n"
-    message += "*Estimation*: **#{story.estimate} points**\n" if !story.estimate.blank?
-    message += eta_string
-    message += "\n\n#{TOKEN}\n"
-  end
-
-  def github_comment icon = ":checkered_flag:"
-    message = "#{icon} *New* #{eta_string true}\nView in [Pivotal Tracker](#{pivotal_story.url})" 
-  end
-
-  def eta_string(display_previous = false)
-    message = "*ETA*: **#{pt_current_eta.strftime("#{pt_current_eta.day.ordinalize} %B %Y")}**" if !pt_current_eta.blank?
-    message += " (was #{pt_previous_eta.strftime("#{pt_previous_eta.day.ordinalize} %B %Y")})\n" if display_previous && !pt_previous_eta.blank? && pt_previous_eta != pt_current_eta
-    message ||= ""
+    options = {
+      id: story.id, 
+      url: story.url,
+      estimate: story.estimate,
+      current: pt_current_eta,
+      previous: pt_previous_eta,
+      body: gh_body
+    }
+    GithubDescriptionHandler.process_description options
   end
 
   def update_github_description
-    unless self.gh_body.gsub!(/^#{TOKEN}(.|\n)*#{TOKEN}/m, github_message)
-      self.gh_body += github_message
-    end
-    Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, self.gh_body
+    #Get up to date description from github
+    return unless should_update_github_description?
+    refresh_issue
+    new_body = computed_github_description
+    Ticket.github_client.update_issue APP_CONFIG["github_repo_name"], gh_number, gh_title, new_body
+    self.gh_body = new_body
+    save
   end
 
   def self.github_client
@@ -160,12 +170,19 @@ class Ticket
   def manage_comment
     if gh_need_comment
       create_comment
-      self.gh_need_comment = false
+      self.set(:gh_need_comment => false)
     end
   end
 
   def create_comment
-    Ticket.github_client.add_comment APP_CONFIG["github_repo_name"], gh_number, github_comment
+    options = {
+      current: self.pt_current_eta,
+      previous: self.pt_previous_eta,
+      display_previous: true,
+      url: pivotal_story.url
+     }
+    comment = GithubDescriptionHandler.eta_comment options
+    Ticket.github_client.add_comment APP_CONFIG["github_repo_name"], gh_number, comment
   end
 
   def self.compute_eta
@@ -184,5 +201,4 @@ class Ticket
       end
     end
   end
-
 end
