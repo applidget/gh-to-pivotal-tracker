@@ -109,7 +109,7 @@ class Ticket
     pivotal_project.story(story_id)
   end
 
-  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state, body)
+  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state, body, milestone_id)
     ticket = Ticket.where(gh_id: gh_id).first
     params = {
         gh_number: number,
@@ -118,7 +118,8 @@ class Ticket
         gh_labels: labels,
         gh_author: author,
         gh_state: state,
-        gh_body: body
+        gh_body: body,
+        gh_milestone_id: milestone_id
       }
     if ticket.nil?
       ticket = Ticket.create({gh_id: gh_id}.merge!(params))

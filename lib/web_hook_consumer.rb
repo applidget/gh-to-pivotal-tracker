@@ -18,7 +18,8 @@ class WebHookConsumer
     author = web_hook.sender["login"]
     state = web_hook.issue["state"]
     body = web_hook.issue["body"]
-    ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state, body
+    milestone_id = web_hook.issue["milestone"]["id"]
+    ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state, body, milestone_id
     ticket.create_story
     ticket.sync
   end
