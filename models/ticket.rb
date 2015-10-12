@@ -26,11 +26,13 @@ class Ticket
   field :gh_state
   field :gh_body
   field :gh_need_comment, type: Boolean, default: false
+  field :gh_milestone_id
 
   #Pivotal Tracker parmas
   field :pt_id
   field :pt_current_eta
   field :pt_previous_eta
+  field :pt_epic_id
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
