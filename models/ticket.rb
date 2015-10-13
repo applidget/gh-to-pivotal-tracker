@@ -33,6 +33,7 @@ class Ticket
   field :pt_current_eta
   field :pt_previous_eta
   field :pt_epic_id
+  field :pt_epic_label
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
@@ -77,6 +78,13 @@ class Ticket
     return if pt_id == nil
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
+    story.labels << self.pt_epic_label if self.pt_epic_label.present?
+  end
+
+  def add_epic epic
+    self.pt_epic_id = epic.id
+    self.pt_epic_label = epic.title
+    sync_labels
   end
   
   def sync_state
