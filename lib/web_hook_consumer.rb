@@ -18,9 +18,20 @@ class WebHookConsumer
     author = web_hook.sender["login"]
     state = web_hook.issue["state"]
     body = web_hook.issue["body"]
-    milestone_id = web_hook.issue["milestone"]["id"]
+    milestone_id = web_hook.issue["milestone"].present? ? web_hook.issue["milestone"]["id"] : nil
+
+    epic = nil
+    if milestone_id.present?
+      if Milestone.where(id: milestone_id).first.nil?
+        epic = Milestone.create_milestone(web_hook.issue["milestone"])
+      elsif
+        epic = Milestone.where(id: milestone_id).first
+      end
+    end
+
     ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state, body, milestone_id
     ticket.create_story
+    ticket.add_epic epic
     ticket.sync
   end
 end
