@@ -78,10 +78,10 @@ class Ticket
     return if pt_id == nil
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
-    story.labels << self.pt_epic_label if self.pt_epic_label.present?
+    story.labels << TrackerApi::Resources::Label.new(name: self.pt_epic_label) if self.pt_epic_label.present?
   end
 
-  def add_epic epic
+  def set_epic epic
     self.pt_epic_id = epic.id
     self.pt_epic_label = epic.title
     sync_labels
