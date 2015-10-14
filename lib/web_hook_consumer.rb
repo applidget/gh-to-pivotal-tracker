@@ -1,3 +1,4 @@
+require "byebug"
 class WebHookConsumer
   
   def sync
@@ -20,18 +21,16 @@ class WebHookConsumer
     body = web_hook.issue["body"]
     milestone_id = web_hook.issue["milestone"].present? ? web_hook.issue["milestone"]["id"] : nil
 
-    epic = nil
+    epic = Milestone.where(id: milestone_id).first
     if milestone_id.present?
-      if Milestone.where(id: milestone_id).first.nil?
+      if epic.nil?
         epic = Milestone.create_milestone(web_hook.issue["milestone"])
-      elsif
-        epic = Milestone.where(id: milestone_id).first
       end
     end
 
     ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state, body, milestone_id
     ticket.create_story
-    ticket.add_epic epic
+    ticket.set_epic epic
     ticket.sync
   end
 end
