@@ -20,6 +20,10 @@ class WebHookConsumer
     body = web_hook.issue["body"]
     milestone_id = web_hook.issue["milestone"].present? ? web_hook.issue["milestone"]["id"] : nil
 
+    self.manage(id, number, title, html_url, labels, author, state, body, milestone_id)
+  end
+
+  def self.manage id, number, title, html_url, labels, author, state, body, milestone_id
     epic = Milestone.where(id: milestone_id).first
     if milestone_id.present?
       if epic.nil?
