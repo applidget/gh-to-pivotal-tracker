@@ -118,6 +118,7 @@ class Ticket
   end
 
   def self.insert_or_update(issue_payload)
+    debugger
     ticket = Ticket.where(gh_id: issue_payload["id"]).first
 
     params = Hash.new
@@ -129,7 +130,7 @@ class Ticket
     params[:gh_author] = issue_payload["user"]["login"]
 
     if ticket.nil?
-      ticket = Ticket.create({gh_id: gh_id}.merge!(params))
+      ticket = Ticket.create({gh_id: params["id"]}.merge!(params))
     else
       ticket.update_attributes(params)
     end

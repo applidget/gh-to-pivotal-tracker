@@ -30,7 +30,7 @@ class Milestone
     end
 
     if milestone.nil?
-      milestone = Milestone.create({id: id}.merge!(params))
+      milestone = Milestone.create({id: params["id"]}.merge!(params))
     else
       milestone.update_attributes(params)
     end
