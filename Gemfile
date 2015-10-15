@@ -8,7 +8,7 @@ gem "multi_json"
 gem "rack-contrib", "~> 1.1.0"
 gem "tux"
 gem "mongoid", "5.0.0"
-gem 'tracker_api', :git => 'git@github.com:dashofcode/tracker_api.git', :branch => 'master'
+gem 'tracker_api'
 gem "resque"
 gem "resque-scheduler", "~> 3.1"
 gem "rake", "10.4.2"
