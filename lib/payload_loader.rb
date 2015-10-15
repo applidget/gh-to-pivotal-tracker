@@ -29,7 +29,7 @@ class PayloadLoader
   end
 
   def self.manage id, number, title, html_url, labels, author, state, body, milestone_payload
-      milestone_id = milestone_payload['id']
+      milestone_id = milestone_payload ? milestone_payload['id'] : nil
       epic = Milestone.where(id: milestone_id).first
       if milestone_id.present?
         if epic.nil?
@@ -39,7 +39,7 @@ class PayloadLoader
 
       ticket = Ticket.insert_or_update id, number, title, html_url, labels, author, state, body, milestone_id
       ticket.create_story
-      ticket.set_epic epic
+      ticket.set_epic epic if epic.present?
       ticket.sync
     end
 end
