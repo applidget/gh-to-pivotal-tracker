@@ -117,18 +117,17 @@ class Ticket
     pivotal_project.story(story_id)
   end
 
-  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state, body, milestone_id)
-    ticket = Ticket.where(gh_id: gh_id).first
-    params = {
-        gh_number: number,
-        gh_title: title,
-        gh_html_url: html_url,
-        gh_labels: labels,
-        gh_author: author,
-        gh_state: state,
-        gh_body: body,
-        gh_milestone_id: milestone_id
-      }
+  def self.insert_or_update(issue_payload)
+    ticket = Ticket.where(gh_id: issue_payload["id"]).first
+
+    params = Hash.new
+    [:id, :number, :title, :html_url, :state, :body, :milestone_id].each do |sym|
+      gh_sym = "gh_#{sym.to_s}".to_sym
+      params[gh_sym] = issue_payload[sym]
+    end
+    params[:gh_labels] = issue_payload["labels"].map {|label| label["name"]}
+    params[:gh_author] = issue_payload["user"]["login"]
+
     if ticket.nil?
       ticket = Ticket.create({gh_id: gh_id}.merge!(params))
     else
