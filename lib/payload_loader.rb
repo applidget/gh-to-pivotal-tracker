@@ -1,6 +1,6 @@
 class PayloadLoader
 
-  def self.consume_issue issue
+  def self.consume issue
     id = issue["id"]
     number = issue["number"]
     title = issue["title"]
@@ -11,21 +11,7 @@ class PayloadLoader
     body = issue["body"]
     milestone_payload = issue["milestone"].present? ? issue["milestone"] : nil
 
-    PayloadLoader.manage(id, number, title, html_url, labels, author, state, body, milestone_payload)
-  end
-
-  def self.consume_web_hook web_hook
-    id = web_hook.issue["id"]
-    number = web_hook.issue["number"]
-    title = web_hook.issue["title"]
-    html_url = web_hook.issue["html_url"]
-    labels = web_hook.issue["labels"].map {|label| label["name"]}
-    author = web_hook.sender["login"]
-    state = web_hook.issue["state"]
-    body = web_hook.issue["body"]
-    milestone_payload = web_hook.issue["milestone"].present? ? web_hook.issue["milestone"] : nil
-
-    PayloadLoader.manage(id, number, title, html_url, labels, author, state, body, milestone_payload)
+    PayloadLoader.manage(issue, milestone_payload)
   end
 
   def self.manage id, number, title, html_url, labels, author, state, body, milestone_payload

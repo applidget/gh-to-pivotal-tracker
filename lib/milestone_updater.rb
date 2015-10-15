@@ -8,7 +8,7 @@ class MilestoneUpdater
     issues = client.issues APP_CONFIG["github_repo_name"], :per_page => 100
 
     issues.each do |issue|
-      PayloadLoader.consume_issue(issue)
+      PayloadLoader.consume(issue)
     end
 
   end
