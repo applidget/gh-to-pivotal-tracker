@@ -118,7 +118,6 @@ class Ticket
   end
 
   def self.insert_or_update(issue_payload)
-    debugger
     ticket = Ticket.where(gh_id: issue_payload["id"]).first
 
     params = Hash.new
