@@ -9,9 +9,9 @@ class PayloadLoader
     author = issue["user"]["login"]
     state = issue["state"]
     body = issue["body"]
-    milestone_id = issue["milestone"].present? ? issue["milestone"]["id"] : nil
+    milestone_payload = issue["milestone"].present? ? issue["milestone"] : nil
 
-    WebHookConsumer.manage(id, number, title, html_url, labels, author, state, body, milestone_id)
+    PayloadLoader.manage(id, number, title, html_url, labels, author, state, body, milestone_payload)
   end
 
   def self.consume_web_hook web_hook
@@ -23,17 +23,17 @@ class PayloadLoader
     author = web_hook.sender["login"]
     state = web_hook.issue["state"]
     body = web_hook.issue["body"]
-    milestone_id = web_hook.issue["milestone"].present? ? web_hook.issue["milestone"]["id"] : nil
+    milestone_payload = web_hook.issue["milestone"].present? ? web_hook.issue["milestone"] : nil
 
-    self.manage(id, number, title, html_url, labels, author, state, body, milestone_id)
+    PayloadLoader.manage(id, number, title, html_url, labels, author, state, body, milestone_payload)
   end
 
-  private 
-    def manage id, number, title, html_url, labels, author, state, body, milestone_id
+  def self.manage id, number, title, html_url, labels, author, state, body, milestone_payload
+      milestone_id = milestone_payload['id']
       epic = Milestone.where(id: milestone_id).first
       if milestone_id.present?
         if epic.nil?
-          epic = Milestone.create_milestone(web_hook.issue["milestone"])
+          epic = Milestone.create_milestone(milestone_payload)
         end
       end
 
