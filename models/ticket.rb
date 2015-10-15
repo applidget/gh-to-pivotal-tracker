@@ -26,11 +26,14 @@ class Ticket
   field :gh_state
   field :gh_body
   field :gh_need_comment, type: Boolean, default: false
+  field :gh_milestone_id
 
   #Pivotal Tracker parmas
   field :pt_id
   field :pt_current_eta
   field :pt_previous_eta
+  field :pt_epic_id
+  field :pt_epic_label
   
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
@@ -75,6 +78,13 @@ class Ticket
     return if pt_id == nil
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
+    story.labels << TrackerApi::Resources::Label.new(name: self.pt_epic_label) if self.pt_epic_label.present?
+  end
+
+  def set_epic epic
+    self.pt_epic_id = epic.id
+    self.pt_epic_label = epic.title
+    sync_labels
   end
   
   def sync_state
@@ -107,19 +117,19 @@ class Ticket
     pivotal_project.story(story_id)
   end
 
-  def self.insert_or_update (gh_id, number, title, html_url, labels, author, state, body)
-    ticket = Ticket.where(gh_id: gh_id).first
-    params = {
-        gh_number: number,
-        gh_title: title,
-        gh_html_url: html_url,
-        gh_labels: labels,
-        gh_author: author,
-        gh_state: state,
-        gh_body: body
-      }
+  def self.insert_or_update(issue_payload)
+    ticket = Ticket.where(gh_id: issue_payload["id"]).first
+
+    params = Hash.new
+    [:id, :number, :title, :html_url, :state, :body, :milestone_id].each do |sym|
+      gh_sym = "gh_#{sym.to_s}".to_sym
+      params[gh_sym] = issue_payload[sym]
+    end
+    params[:gh_labels] = issue_payload["labels"].map {|label| label["name"]}
+    params[:gh_author] = issue_payload["user"]["login"]
+
     if ticket.nil?
-      ticket = Ticket.create({gh_id: gh_id}.merge!(params))
+      ticket = Ticket.create({gh_id: params["id"]}.merge!(params))
     else
       ticket.update_attributes(params)
     end

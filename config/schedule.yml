@@ -9,3 +9,9 @@ sync_github_updaters:
   class: GithubUpdaterJob
   queue: gh_update
   description: "This will update github description in function of Pivotal Tracker tickets"
+
+sync_milestone:
+  every: 5m
+  class: MilestoneUpdaterJob
+  queue: gh_update
+  description: "This will check all the issues and update them if they have a unsynchronised milestone"

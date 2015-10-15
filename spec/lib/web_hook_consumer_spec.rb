@@ -8,7 +8,7 @@ describe WebHookConsumer do
       "title" => "Some regex issue",
       "html_url" => "http://github.com",
       "labels" => [{:name => "bug"}, {name:"qualified"}],
-      "author" => "rpechayr",
+      "user" => {"login" => "rpechayr"},
       "state" => "open",
       "body" => "Some really short body"
     }
