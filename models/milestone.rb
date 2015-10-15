@@ -11,6 +11,7 @@ class Milestone
   field :state
   field :due_on
   field :closed_at
+  field :html_url
 
   field :pt_epic_id
 
@@ -23,13 +24,14 @@ class Milestone
     state = payload_milestone["state"]
     due_on = payload_milestone['due_on']
     closed_at = payload_milestone["closed_at"]
+    html_url = payload_milestone["html_url"]
 
-    milestone = Milestone.insert_or_update(id, title, description, open_issues, closed_at, state, due_on, closed_at)
+    milestone = Milestone.insert_or_update(id, title, description, open_issues, closed_at, state, due_on, closed_at, html_url)
     milestone.create_epic
     milestone
   end
 
-  def self.insert_or_update(id, title, description, open_issues, closed_issues, state, due_on, closed_at)
+  def self.insert_or_update(id, title, description, open_issues, closed_issues, state, due_on, closed_at, html_url)
     milestone = Milestone.where(id: id).first
     params = {
         title: title,
@@ -39,6 +41,7 @@ class Milestone
         state: state,
         due_on: due_on,
         closed_at: closed_at,
+        html_url: html_url
       }
     if milestone.nil?
       milestone = Milestone.create({id: id}.merge!(params))
@@ -50,7 +53,7 @@ class Milestone
 
   def create_epic
     return unless pt_epic_id.blank?
-    @pivotal_epic = Ticket.pivotal_project.create_epic(name: title, description: description)
+    @pivotal_epic = Ticket.pivotal_project.create_epic(name: title, description: html_url)
     if @pivotal_epic.id
       self.pt_epic_id = @pivotal_epic.id
       self.save
