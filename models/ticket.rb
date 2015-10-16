@@ -67,7 +67,7 @@ class Ticket
     status != "unscheduled"
   end
 
-    def need_sync?
+  def need_sync?
     return true if @values_updated.nil?
     @values_updated.has_value?(true)
   end
