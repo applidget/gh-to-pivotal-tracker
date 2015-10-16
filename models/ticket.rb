@@ -38,7 +38,7 @@ class Ticket
   validates_presence_of :gh_id, :gh_number, :gh_number, :gh_title, :gh_author
   validates_uniqueness_of :gh_id, :gh_number
   validates_uniqueness_of :pt_id, allow_nil: true
-  
+
   def should_create_story?
     pt_id.blank? && gh_labels.include?(TRIGGERING_LABEL)
   end
@@ -66,12 +66,23 @@ class Ticket
   def scheduled?
     status != "unscheduled"
   end
+
+  def need_sync?
+    return true if @values_updated.nil?
+    @values_updated.has_value?(true)
+  end
   
   def sync
     return if pt_id == nil
+    return unless need_sync?
     sync_labels
     sync_state
     pivotal_story.save
+  end
+
+  def set_epic epic
+    self.pt_epic_id = epic.id
+    self.pt_epic_label = epic.title
   end
   
   def sync_labels
@@ -79,12 +90,6 @@ class Ticket
     story = pivotal_story
     story.labels = self.gh_labels.map { |label| TrackerApi::Resources::Label.new(name: label)}
     story.labels << TrackerApi::Resources::Label.new(name: self.pt_epic_label) if self.pt_epic_label.present?
-  end
-
-  def set_epic epic
-    self.pt_epic_id = epic.id
-    self.pt_epic_label = epic.title
-    sync_labels
   end
   
   def sync_state
@@ -102,8 +107,7 @@ class Ticket
       end
     end
   end
-  
-  
+
   def self.pivotal_project
     @@pivotal_client ||= TrackerApi::Client.new(token: APP_CONFIG["pivotal_tracker_auth_token"].to_s)
     @@pivotal_project  ||= @@pivotal_client.project(APP_CONFIG["pivotal_tracker_project_id"])  
@@ -128,9 +132,13 @@ class Ticket
     params[:gh_labels] = issue_payload["labels"].map {|label| label["name"]}
     params[:gh_author] = issue_payload["user"]["login"]
 
+    @values_updated = Hash.new
     if ticket.nil?
       ticket = Ticket.create({gh_id: params["id"]}.merge!(params))
     else
+      [:gh_labels, :gh_state].each do |sym|
+        @values_updated[sym] = (params[sym] == ticket.send(sym))
+      end
       ticket.update_attributes(params)
     end
     ticket
