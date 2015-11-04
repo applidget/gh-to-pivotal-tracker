@@ -1,5 +1,5 @@
 class MilestoneUpdaterJob
-  @queue = :gh_update
+  @queue = :milestone
   def self.perform
     consumer = MilestoneUpdater.new
     consumer.sync
