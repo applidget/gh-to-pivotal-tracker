@@ -45,7 +45,7 @@ class Ticket
   
   def create_story
     return unless should_create_story?
-    @pivotal_story = Ticket.pivotal_project.create_story(name: gh_title, description: gh_html_url, story_type: "chore")
+    @pivotal_story = Ticket.pivotal_project.create_story(name: "##{gh_number}: #{gh_title}", description: gh_html_url, story_type: "chore")
     if @pivotal_story.id
       self.pt_id = @pivotal_story.id
       self.save
