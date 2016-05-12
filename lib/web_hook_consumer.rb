@@ -7,10 +7,10 @@ class WebHookConsumer
       begin
         PayloadLoader.consume(web_hook.issue)
         web_hook.set(sync_state: "DONE", sync_ts: DateTime.now)
-      rescue Exception => e
+      rescue TrackerApi::Error
         web_hook.set(sync_state: "TODO")
         puts "Issue number: '#{web_hook.issue["number"]}', title : '#{web_hook.issue["title"]}' could not be updated in PT"
-         break
+        break
       end
     end
   end
