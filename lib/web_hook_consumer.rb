@@ -1,4 +1,3 @@
-require 'byebug'
 class WebHookConsumer
   
   def sync
