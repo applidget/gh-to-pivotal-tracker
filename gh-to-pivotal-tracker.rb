@@ -20,7 +20,11 @@ class GithubToPivotalTracker < Sinatra::Base
       ::MultiJson.decode(request.body)
     end
   end
-  
+
+  get '/' do
+    "ok"
+  end
+
   post '/hook' do
     WebHook.create action: params[:action], issue: params[:issue], sender: params[:sender]
   end
